@@ -1,0 +1,54 @@
+{
+  "timezone": "Asia/Kolkata",
+  "reference_now": "2026-10-11T09:00:00+05:30",
+  "slot_duration_minutes": 30,
+  "providers": [
+    {
+      "id": "P1",
+      "name": "Smile Dental Clinic",
+      "practitioner": "Dr. Meera Iyer",
+      "service": "dental checkup",
+      "keywords": ["dental", "dentist", "teeth", "tooth", "smile dental", "dental check up", "dental checkup"],
+      "address": "12 Residency Road, Bengaluru"
+    },
+    {
+      "id": "P2",
+      "name": "Urban Trim Salon",
+      "practitioner": "Arjun Nair",
+      "service": "haircut",
+      "keywords": ["haircut", "hair cut", "hair", "salon", "trim", "barber", "urban trim"],
+      "address": "45 Linking Road, Mumbai"
+    },
+    {
+      "id": "P3",
+      "name": "Kinetic Physio Centre",
+      "practitioner": "Dr. Sana Qureshi",
+      "service": "physiotherapy",
+      "keywords": ["physiotherapy", "physio", "physical therapy", "physiotherapist", "kinetic"],
+      "address": "8 Park Street, Kolkata"
+    }
+  ],
+  "slots": [
+    {"id": "S01", "provider_id": "P1", "start": "2026-10-20T10:00:00+05:30"},
+    {"id": "S02", "provider_id": "P1", "start": "2026-10-20T11:00:00+05:30"},
+    {"id": "S03", "provider_id": "P1", "start": "2026-10-20T14:00:00+05:30"},
+    {"id": "S04", "provider_id": "P1", "start": "2026-10-21T10:00:00+05:30"},
+    {"id": "S05", "provider_id": "P1", "start": "2026-10-21T15:00:00+05:30"},
+
+    {"id": "S06", "provider_id": "P2", "start": "2026-10-20T10:00:00+05:30"},
+    {"id": "S07", "provider_id": "P2", "start": "2026-10-20T11:00:00+05:30"},
+    {"id": "S08", "provider_id": "P2", "start": "2026-10-20T14:00:00+05:30"},
+    {"id": "S09", "provider_id": "P2", "start": "2026-10-21T10:00:00+05:30"},
+    {"id": "S10", "provider_id": "P2", "start": "2026-10-21T15:00:00+05:30"},
+
+    {"id": "S11", "provider_id": "P3", "start": "2026-10-20T10:00:00+05:30"},
+    {"id": "S12", "provider_id": "P3", "start": "2026-10-20T11:00:00+05:30"},
+    {"id": "S13", "provider_id": "P3", "start": "2026-10-20T14:00:00+05:30"},
+    {"id": "S14", "provider_id": "P3", "start": "2026-10-21T10:00:00+05:30"},
+    {"id": "S15", "provider_id": "P3", "start": "2026-10-21T15:00:00+05:30"}
+  ],
+  "bookings": [
+    {"id": "BK24017", "slot_id": "S07", "customer_name": "Rahul Verma", "created_at": "2026-10-09T18:30:00+05:30"},
+    {"id": "BK31552", "slot_id": "S01", "customer_name": "Anita Desai", "created_at": "2026-10-10T11:15:00+05:30"}
+  ]
+}
