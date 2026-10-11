@@ -1,0 +1,36 @@
+# Environments and caches
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Local configuration & credentials
+.env
+*.pem
+*.key
+
+# Local database and media outputs
+data/*.db
+data/*.db-wal
+data/*.db-shm
+data/tts_out/
+data/uploads/
+backend/data/*.db
+backend/data/*.db-wal
+backend/data/*.db-shm
+backend/data/tts_out/
+backend/data/uploads/
+demo_output/demo.db*
+backend/demo_output/demo.db*
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+
+# OS and editor files
+.DS_Store
+.idea/
+.vscode/

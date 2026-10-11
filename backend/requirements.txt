@@ -1,0 +1,16 @@
+fastapi==0.143.0
+uvicorn[standard]==0.54.0
+python-multipart==0.0.32
+pydantic==2.14.0
+httpx==0.28.1
+tzdata==2026.5
+# Local speech-to-text (offline). faster-whisper 1.2.x needs PyAV < 17.
+faster-whisper==1.2.1
+av==16.1.0
+# Fast in-process macOS TTS (falls back to the `say` command if absent)
+pyobjc-framework-Cocoa==12.2.2; sys_platform == "darwin"
+# Tests
+pytest==9.1.1
+pytest-cov==7.1.0
+# Optional local TTS on Linux/Windows (macOS uses the built-in `say`):
+pyttsx3==2.98; sys_platform != "darwin"
