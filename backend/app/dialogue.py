@@ -69,6 +69,7 @@ class DialogueManager:
         self._locks: dict[str, threading.Lock] = {}
         self._locks_guard = threading.Lock()
 
+
     def start_session(self, speak: Callable[[str], str | None] | None = None) -> tuple[str, str, dict, str | None]:
         state = initial_state()
         session_id = self.repo.create_session(state)
@@ -82,7 +83,11 @@ class DialogueManager:
 
     def handle(self, session_id: str, user_text: str, user_audio: str | None = None,
                speak: Callable[[str], str | None] | None = None) -> tuple[str, dict, str | None]:
-        """Process one user utterance; turns of the same session are serialized."""
+        """Process one user utterance; turns of the same session are serialized.
+
+        `speak` turns the reply into audio and returns its path, which is stored
+        with the agent turn. Returns (reply_text, new_state, reply_audio_path).
+        """
         with self._lock(session_id):
             state = self.repo.load_state(session_id)
             if state is None:
@@ -105,6 +110,13 @@ class DialogueManager:
             state.update(initial_state())
             return "Okay, let's start over. Would you like to book or cancel an appointment?"
 
+        step = state["step"]
+        if step == "awaiting_booking_confirmation":
+            return self._on_booking_confirmation(session_id, state, raw, norm, digits)
+        if step == "awaiting_cancel_confirmation":
+            return self._on_cancel_confirmation(session_id, state, norm)
+        if step == "offering_alternatives":
+            return self._on_alternatives(state, raw, norm, digits)
         return self._on_collect(state, raw, norm, digits)
 
     def _today(self) -> date:
@@ -134,7 +146,12 @@ class DialogueManager:
     def _on_collect(self, state: dict, raw: str, norm: str, digits: str) -> str:
         if state["intent"] is None or (state["intent"] == "book" and nlu.parse_intent(norm) == "cancel"):
             intent = nlu.parse_intent(norm)
+            if intent == "cancel":
+                state.update(initial_state() | {"customer_name": state["customer_name"], "turn": state["turn"],
+                                                 "last_booking_id": state["last_booking_id"]})
             state["intent"] = intent
+        if state["intent"] == "cancel":
+            return self._collect_cancel(state, digits)
 
         changed = self._extract_booking_fields(state, raw, norm, digits)
         if state["intent"] is None:
@@ -146,14 +163,14 @@ class DialogueManager:
         return self._advance_booking(state)
 
     def _advance_booking(self, state: dict, prefix: str = "") -> str:
-        """Ask for the next missing field."""
+        """Ask for the next missing field, or check the database once everything is known."""
         if state["date"] and date.fromisoformat(state["date"]) < self._today():
             state["date"] = None
             prefix += "That date has already passed. "
 
         missing = [f for f in REQUIRED_FIELDS if not state[f]]
         if not missing:
-            return prefix + "All details collected."
+            return prefix + self._check_availability(state)
 
         field = missing[0]
         state["awaiting"] = field
@@ -167,12 +184,112 @@ class DialogueManager:
         if field == "date":
             dates = sorted({s["slot_date"] for s in self.repo.available_slots(state["service"])})
             if not dates:
+                self._reset_booking_fields(state)
                 return prefix + f"Sorry, there are no open {state['service']} slots right now."
-            listed = spoken_list([spoken_date(d, self.clock().year) for d in dates[:4]])
+            listed = spoken_list([self._date(d) for d in dates[:4]])
             return prefix + ack + f"Which day? I have openings on {listed}."
         # field == "time"
         slots = self.repo.available_slots(state["service"], state["date"])
         if not slots:
-            return prefix + f"There are no open {state['service']} slots on {spoken_date(state['date'], self.clock().year)}."
+            return prefix + self._offer_alternatives(
+                state, f"There are no open {state['service']} slots on {self._date(state['date'])}.")
         times = spoken_list([spoken_time(s["slot_time"]) for s in slots])
-        return prefix + ack + f"What time on {spoken_date(state['date'], self.clock().year)}? I have {times}."
+        return prefix + ack + f"What time on {self._date(state['date'])}? I have {times}."
+
+    def _requested_dt(self, state: dict) -> datetime | None:
+        if not state["date"]:
+            return None
+        hhmm = state["time"] or "12:00"
+        return datetime.fromisoformat(f"{state['date']}T{hhmm}:00").replace(tzinfo=TZ)
+
+    def _check_availability(self, state: dict) -> str:
+        slot = self.repo.find_slot(state["service"], state["date"], state["time"])
+        requested = self._when(self._requested_dt(state).isoformat())
+        if slot and slot["status"] == "available" and slot["start_at"] > self.clock().isoformat():
+            return self._ask_booking_confirmation(state, slot)
+        if slot is None:
+            reason = f"There is no {state['service']} slot at {requested}."
+        elif slot["status"] == "booked":
+            reason = f"Sorry, {requested} is already booked."
+        else:
+            reason = f"Sorry, {requested} has already passed."
+        return self._offer_alternatives(state, reason)
+
+    def _offer_alternatives(self, state: dict, reason: str, exclude: set[str] | None = None) -> str:
+        alts = self.repo.alternatives(state["service"], self._requested_dt(state), limit=3, exclude=exclude)
+        state["pending_slot_id"] = None
+        if not alts:
+            state.update(step="collecting", awaiting="date", alternatives=[], date=None, time=None)
+            return f"{reason} Sorry, there are no other open {state['service']} slots."
+        state.update(step="offering_alternatives", awaiting="alternative_choice",
+                     alternatives=[a["slot_id"] for a in alts])
+        return f"{reason} I have {self._options(alts)}. Which works for you?"
+
+    def _options(self, slots: list[dict]) -> str:
+        """'11 AM or 2 PM on Tuesday 20 October, or 10 AM on Wednesday 21 October' (slot order kept)."""
+        groups: dict[str, list[str]] = {}
+        for s in slots:
+            groups.setdefault(s["slot_date"], []).append(spoken_time(s["slot_time"]))
+        return ", or ".join(f"{spoken_list(times)} on {self._date(d)}" for d, times in groups.items())
+
+    def _date(self, iso: str) -> str:
+        return spoken_date(iso, self.clock().year)
+
+    def _when(self, start_at: str) -> str:
+        return spoken_when(start_at, self.clock().year)
+
+    def _ask_booking_confirmation(self, state: dict, slot: dict) -> str:
+        state.update(step="awaiting_booking_confirmation", awaiting="confirmation",
+                     pending_slot_id=slot["slot_id"], alternatives=[],
+                     date=slot["slot_date"], time=slot["slot_time"])
+        first_name = state["customer_name"].split(" ")[0]
+        return (f"{slot['service'].capitalize()} with {slot['practitioner']} at {slot['provider_name']}, "
+                f"{self._when(slot['start_at'])}. Shall I book it for {first_name}?")
+
+
+    def _on_alternatives(self, state: dict, raw: str, norm: str, digits: str) -> str:
+        offered = [s for s in (self.repo.get_slot(i) for i in state["alternatives"]) if s]
+        choice = nlu.parse_option_choice(norm, len(offered))
+        if choice is not None:
+            return self._choose(state, offered[choice])
+
+        service = nlu.parse_service(norm, self.repo.services())
+        if service and service != state["service"]:
+            state.update(service=service, step="collecting", alternatives=[])
+            self._extract_booking_fields(state, raw, norm, digits)
+            return self._advance_booking(state)
+
+        d, t = nlu.parse_datetime(digits, self._today(), allow_bare_time=True)
+        if t:
+            matches = [s for s in offered if s["slot_time"] == t and (d is None or s["slot_date"] == d.isoformat())]
+            if len(matches) == 1:
+                return self._choose(state, matches[0])
+            state.update(date=d.isoformat() if d else state["date"], time=t, step="collecting", alternatives=[])
+            return self._advance_booking(state)
+        if d:
+            state.update(date=d.isoformat(), time=None, step="collecting", alternatives=[])
+            return self._advance_booking(state)
+
+        answer = nlu.parse_yes_no(norm, "book")
+        if answer is True and len(offered) == 1:
+            return self._choose(state, offered[0])
+        if answer is False:
+            state.update(step="collecting", awaiting="date", alternatives=[], date=None, time=None)
+            return "No problem. Which other date would you like?"
+        return f"Sorry, which one? I have {self._options(offered)}."
+
+    def _choose(self, state: dict, slot: dict) -> str:
+        fresh = self.repo.get_slot(slot["slot_id"])  # re-read: it may have been taken meanwhile
+        if fresh is None or fresh["status"] != "available":
+            return self._offer_alternatives(state, "Sorry, that slot has just been taken.", exclude={slot["slot_id"]})
+        return self._ask_booking_confirmation(state, fresh)
+
+
+    def _on_booking_confirmation(self, session_id: str, state: dict, raw: str, norm: str, digits: str) -> str:
+        return "Booking confirmation pending implementation."
+
+    def _collect_cancel(self, state: dict, digits: str) -> str:
+        return "Cancel flow pending implementation."
+
+    def _on_cancel_confirmation(self, session_id: str, state: dict, norm: str) -> str:
+        return "Cancel confirmation pending implementation."
