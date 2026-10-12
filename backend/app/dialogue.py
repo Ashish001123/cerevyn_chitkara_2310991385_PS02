@@ -286,10 +286,70 @@ class DialogueManager:
 
 
     def _on_booking_confirmation(self, session_id: str, state: dict, raw: str, norm: str, digits: str) -> str:
-        return "Booking confirmation pending implementation."
+        pending = self.repo.get_slot(state["pending_slot_id"])
+        before = {k: state[k] for k in ("service", "date", "time")}
+        changed = [k for k in self._extract_booking_fields(state, raw, norm, digits) if k in before]
+        if changed:
+            # The user asked for something different instead of answering yes/no.
+            if "date" in changed and "time" not in changed:
+                state["time"] = None
+            state.update(step="collecting", pending_slot_id=None)
+            return self._advance_booking(state, prefix="Okay, I haven't booked anything yet. ")
+
+        answer = nlu.parse_yes_no(norm, "book")
+        if answer is None:
+            return f"Sorry, is that a yes or a no? Shall I book {self._when(pending['start_at'])}?"
+        if answer is False:
+            state.update(step="collecting", awaiting="date", pending_slot_id=None, date=None, time=None)
+            return "No problem, I have not booked anything. Which other day would you like?"
+
+        result = self.repo.reserve_slot(state["pending_slot_id"], state["customer_name"], session_id)
+        if not result.ok:
+            reason = ("Sorry, that slot was just booked by another customer, so I could not reserve it."
+                      if result.reason == "slot_taken" else "Sorry, that slot is no longer available.")
+            return self._offer_alternatives(state, reason, exclude={state["pending_slot_id"]})
+
+        b = result.booking
+        state["last_booking_id"] = b["booking_id"]
+        self._reset_booking_fields(state)
+        return (f"You're confirmed! Your booking ID is {b['booking_id']}. {b['service'].capitalize()} with "
+                f"{b['practitioner']} at {b['provider_name']}, {self._when(b['start_at'])} IST. Anything else?")
+
+    def _reset_booking_fields(self, state: dict) -> None:
+        state.update(step="start", intent=None, awaiting="intent", service=None, date=None, time=None,
+                     pending_slot_id=None, alternatives=[], cancel_booking_id=None)
+
 
     def _collect_cancel(self, state: dict, digits: str) -> str:
-        return "Cancel flow pending implementation."
+        state["step"] = "collecting"
+        booking_id = nlu.parse_booking_id(digits, expecting=state["awaiting"] == "booking_id")
+        if booking_id is None:
+            state["awaiting"] = "booking_id"
+            return "Sure. What's your booking ID? It starts with B K."
+        booking = self.repo.get_booking(booking_id)
+        if booking is None:
+            state["awaiting"] = "booking_id"
+            return f"I couldn't find booking {booking_id}. Could you say the ID again?"
+        if booking["booking_status"] != "confirmed":
+            self._reset_booking_fields(state)
+            return f"Booking {booking_id} is already cancelled. Anything else?"
+        state.update(step="awaiting_cancel_confirmation", awaiting="confirmation", cancel_booking_id=booking_id)
+        return (f"I found {booking_id}: {booking['service']} for {booking['customer_name']}, "
+                f"{self._when(booking['start_at'])}. Shall I cancel it?")
 
     def _on_cancel_confirmation(self, session_id: str, state: dict, norm: str) -> str:
-        return "Cancel confirmation pending implementation."
+        booking_id = state["cancel_booking_id"]
+        answer = nlu.parse_yes_no(norm, "cancel")
+        if answer is None:
+            return f"Sorry, is that a yes or a no? Should I cancel {booking_id}?"
+        if answer is False:
+            self._reset_booking_fields(state)
+            return f"Okay, I have not cancelled anything. Booking {booking_id} is still confirmed."
+        result = self.repo.cancel_booking(booking_id, session_id)
+        self._reset_booking_fields(state)
+        if not result.ok:
+            return f"Booking {booking_id} could not be cancelled because it is {result.reason.replace('_', ' ')}."
+        state["last_cancelled_id"] = booking_id
+        b = result.booking
+        return (f"Done. Booking {booking_id} has been cancelled, and {self._when(b['start_at'])} "
+                f"is free again. Anything else?")
