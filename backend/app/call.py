@@ -1,11 +1,17 @@
-"""Live call pipeline: streamed mic audio -> turn detection -> STT.
+"""Live call pipeline: streamed mic audio -> turn detection -> STT -> dialogue -> streamed TTS.
 
-`CallSession.feed` runs Silero VAD in ~1 ms per 32 ms frame and is
-called for every audio chunk. It emits speculative and turn events.
+`CallSession.feed` is cheap (Silero VAD runs in ~1 ms per 32 ms frame) and is
+called for every audio chunk. It returns events; `_speculate` and `_turn` carry
+the caller's audio so the transport layer can run STT off the event loop.
+`respond` is a generator that yields the reply sentence by sentence, so the
+first sentence plays while the rest is still being synthesized.
 """
 
 from __future__ import annotations
 
+import base64
+import re
+import time
 import uuid
 import wave
 from collections import deque
@@ -18,14 +24,14 @@ from .speech import STTEngine, TTSEngine
 from .turns import FRAME_MS, TurnConfig, TurnDetector
 
 SR = 16000
-FRAME = SR * FRAME_MS // 1000        
-PREROLL_FRAMES = 10                   
-MIN_TURN_SAMPLES = SR                 
+FRAME = SR * FRAME_MS // 1000          # 512 samples
+PREROLL_FRAMES = 10                    # ~320 ms kept from before the turn started (word onsets)
+MIN_TURN_SAMPLES = SR                  # shorter "turns" with no words (coughs, clicks) are ignored
 REPEAT_PROMPT = "Sorry, could you say that again?"
 
 
 class StreamingVAD:
-    """Silero VAD run one frame at a time with carried state."""
+    """Silero VAD (bundled with faster-whisper) run one frame at a time with carried state."""
 
     def __init__(self):
         from faster_whisper.vad import get_vad_model
@@ -45,6 +51,11 @@ class StreamingVAD:
         return float(np.asarray(out).reshape(-1)[0])
 
 
+def split_sentences(text: str) -> list[str]:
+    parts = re.split(r"(?<!\bDr\.)(?<!\bMr\.)(?<!\bMs\.)(?<=[.?!])\s+", text.strip())
+    return [p for p in parts if p]
+
+
 class CallSession:
     def __init__(self, dialogue: DialogueManager, stt: STTEngine, tts: TTSEngine, session_id: str,
                  audio_dir: Path, vad: StreamingVAD | None = None, config: TurnConfig | None = None):
@@ -59,6 +70,7 @@ class CallSession:
         self._cancel = False
         self._last_audio_path: str | None = None
 
+    # ------------------------------------------------------------------- input
     @property
     def agent_speaking(self) -> bool:
         return self.turns.agent_speaking
@@ -95,6 +107,7 @@ class CallSession:
                 self._preroll.clear()
         return events
 
+    # ------------------------------------------------------------------ output
     def transcribe(self, audio: np.ndarray) -> str:
         path = self.audio_dir / f"call-{uuid.uuid4().hex[:10]}.wav"
         with wave.open(str(path), "wb") as w:
@@ -104,3 +117,40 @@ class CallSession:
             w.writeframes((np.clip(audio, -1, 1) * 32767).astype("<i2").tobytes())
         self._last_audio_path = str(path)
         return self.stt.transcribe(path)
+
+    def cancel_speech(self) -> None:
+        """Barge-in: stop synthesizing/sending the rest of the current reply."""
+        self._cancel = True
+
+    def respond(self, audio: np.ndarray, transcript: str | None = None):
+        """Yield transcript, agent_text, agent_audio (one per sentence) and timings events."""
+        self._cancel = False
+        t0 = time.perf_counter()
+        text = transcript if transcript is not None else self.transcribe(audio)
+        stt_ms = round((time.perf_counter() - t0) * 1000)
+        if not text:
+            if len(audio) < MIN_TURN_SAMPLES:
+                yield {"type": "ignored"}
+                return
+            reply, state = REPEAT_PROMPT, self.dialogue.repo.load_state(self.session_id)
+        else:
+            yield {"type": "transcript", "text": text}
+            reply, state, _ = self.dialogue.handle(self.session_id, text, user_audio=self._last_audio_path)
+        yield {"type": "agent_text", "text": reply, "state": state}
+        yield from self.speak(reply, t0, stt_ms)
+
+    def speak(self, text: str, t0: float | None = None, stt_ms: int = 0):
+        """Synthesize and yield the reply one sentence at a time, then a timings event."""
+        t0 = t0 or time.perf_counter()
+        first_audio_ms = None
+        sentences = split_sentences(text)
+        for i, sentence in enumerate(sentences):
+            if self._cancel:
+                break
+            path = Path(self.tts.synthesize(sentence, self.audio_dir / f"agent-{uuid.uuid4().hex[:10]}.wav"))
+            if first_audio_ms is None:
+                first_audio_ms = round((time.perf_counter() - t0) * 1000)
+            yield {"type": "agent_audio", "index": i, "last": i == len(sentences) - 1,
+                   "audio_b64": base64.b64encode(path.read_bytes()).decode()}
+        yield {"type": "timings", "stt_ms": stt_ms, "first_audio_ms": first_audio_ms,
+               "total_ms": round((time.perf_counter() - t0) * 1000)}
