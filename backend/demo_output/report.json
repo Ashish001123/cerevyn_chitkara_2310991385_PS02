@@ -1,0 +1,851 @@
+{
+  "engines": {
+    "stt": "faster-whisper",
+    "tts": "macos-native"
+  },
+  "scenarios": [
+    {
+      "id": "1_successful_booking",
+      "title": "Successful booking",
+      "sessions": {
+        "Priya": "bdf88f502e934ad4b928bd86ede5c7dd"
+      },
+      "log": [
+        {
+          "session": "Priya",
+          "role": "agent",
+          "text": "Hi! I can book or cancel a dental checkup, haircut or physiotherapy appointment. How can I help?",
+          "audio": null,
+          "step": "start"
+        },
+        {
+          "session": "Priya",
+          "role": "user",
+          "spoken_text": "Hi, I would like to book a haircut on October 20th at 10 AM. My name is Priya Sharma.",
+          "audio": "samples/audio/s1_t1.wav",
+          "transcript": "Hi, I would like to book a haircut on October 20th 10 AM. My name is Priya Sarma."
+        },
+        {
+          "session": "Priya",
+          "role": "agent",
+          "text": "Haircut with Arjun Nair at Urban Trim Salon, Tuesday 20 October at 10 AM. Shall I book it for Priya?",
+          "audio": "demo_output/audio/s1_t1_reply.wav",
+          "step": "awaiting_booking_confirmation",
+          "state": {
+            "step": "awaiting_booking_confirmation",
+            "intent": "book",
+            "awaiting": "confirmation",
+            "service": "haircut",
+            "customer_name": "Priya Sarma",
+            "date": "2026-10-20",
+            "time": "10:00",
+            "pending_slot_id": "S06",
+            "alternatives": [],
+            "cancel_booking_id": null,
+            "last_booking_id": null,
+            "last_cancelled_id": null,
+            "turn": 1
+          }
+        },
+        {
+          "session": "Priya",
+          "role": "user",
+          "spoken_text": "Yes, please.",
+          "audio": "samples/audio/s1_t2.wav",
+          "transcript": "Yes please.\""
+        },
+        {
+          "session": "Priya",
+          "role": "agent",
+          "text": "You're confirmed! Your booking ID is BK96180. Haircut with Arjun Nair at Urban Trim Salon, Tuesday 20 October at 10 AM IST. Anything else?",
+          "audio": "demo_output/audio/s1_t2_reply.wav",
+          "step": "start",
+          "state": {
+            "step": "start",
+            "intent": null,
+            "awaiting": "intent",
+            "service": null,
+            "customer_name": "Priya Sarma",
+            "date": null,
+            "time": null,
+            "pending_slot_id": null,
+            "alternatives": [],
+            "cancel_booking_id": null,
+            "last_booking_id": "BK96180",
+            "last_cancelled_id": null,
+            "turn": 2
+          }
+        }
+      ]
+    },
+    {
+      "id": "2_unavailable_slot",
+      "title": "Unavailable slot with alternatives from the database",
+      "sessions": {
+        "Rohan": "23f4a955236d4d3c84f164c38640583e"
+      },
+      "log": [
+        {
+          "session": "Rohan",
+          "role": "agent",
+          "text": "Hi! I can book or cancel a dental checkup, haircut or physiotherapy appointment. How can I help?",
+          "audio": null,
+          "step": "start"
+        },
+        {
+          "session": "Rohan",
+          "role": "user",
+          "spoken_text": "I need a dental checkup on October 20th at 10 AM. My name is Rohan Gupta.",
+          "audio": "samples/audio/s2_t1.wav",
+          "transcript": "I need a dental checkup on the 20th of October at 10 AM. My name is Rohan Gupta."
+        },
+        {
+          "session": "Rohan",
+          "role": "agent",
+          "text": "Sorry, Tuesday 20 October at 10 AM is already booked. I have 11 AM or 2 PM on Tuesday 20 October, or 10 AM on Wednesday 21 October. Which works for you?",
+          "audio": "demo_output/audio/s2_t1_reply.wav",
+          "step": "offering_alternatives",
+          "state": {
+            "step": "offering_alternatives",
+            "intent": "book",
+            "awaiting": "alternative_choice",
+            "service": "dental checkup",
+            "customer_name": "Rohan Gupta",
+            "date": "2026-10-20",
+            "time": "10:00",
+            "pending_slot_id": null,
+            "alternatives": [
+              "S02",
+              "S03",
+              "S04"
+            ],
+            "cancel_booking_id": null,
+            "last_booking_id": null,
+            "last_cancelled_id": null,
+            "turn": 1
+          }
+        },
+        {
+          "session": "Rohan",
+          "role": "user",
+          "spoken_text": "The 11 AM one, please.",
+          "audio": "samples/audio/s2_t2.wav",
+          "transcript": "The 11 AM one, please."
+        },
+        {
+          "session": "Rohan",
+          "role": "agent",
+          "text": "Dental checkup with Dr. Meera Iyer at Smile Dental Clinic, Tuesday 20 October at 11 AM. Shall I book it for Rohan?",
+          "audio": "demo_output/audio/s2_t2_reply.wav",
+          "step": "awaiting_booking_confirmation",
+          "state": {
+            "step": "awaiting_booking_confirmation",
+            "intent": "book",
+            "awaiting": "confirmation",
+            "service": "dental checkup",
+            "customer_name": "Rohan Gupta",
+            "date": "2026-10-20",
+            "time": "11:00",
+            "pending_slot_id": "S02",
+            "alternatives": [],
+            "cancel_booking_id": null,
+            "last_booking_id": null,
+            "last_cancelled_id": null,
+            "turn": 2
+          }
+        },
+        {
+          "session": "Rohan",
+          "role": "user",
+          "spoken_text": "Yes, book it.",
+          "audio": "samples/audio/s2_t3.wav",
+          "transcript": "Yes, book it."
+        },
+        {
+          "session": "Rohan",
+          "role": "agent",
+          "text": "You're confirmed! Your booking ID is BK65978. Dental checkup with Dr. Meera Iyer at Smile Dental Clinic, Tuesday 20 October at 11 AM IST. Anything else?",
+          "audio": "demo_output/audio/s2_t3_reply.wav",
+          "step": "start",
+          "state": {
+            "step": "start",
+            "intent": null,
+            "awaiting": "intent",
+            "service": null,
+            "customer_name": "Rohan Gupta",
+            "date": null,
+            "time": null,
+            "pending_slot_id": null,
+            "alternatives": [],
+            "cancel_booking_id": null,
+            "last_booking_id": "BK65978",
+            "last_cancelled_id": null,
+            "turn": 3
+          }
+        }
+      ]
+    },
+    {
+      "id": "3_missing_information",
+      "title": "Missing information collected over several turns (with an ambiguous answer)",
+      "sessions": {
+        "Karan": "4d2548b181e84a91b6049e63829e7086"
+      },
+      "log": [
+        {
+          "session": "Karan",
+          "role": "agent",
+          "text": "Hi! I can book or cancel a dental checkup, haircut or physiotherapy appointment. How can I help?",
+          "audio": null,
+          "step": "start"
+        },
+        {
+          "session": "Karan",
+          "role": "user",
+          "spoken_text": "I would like to book an appointment.",
+          "audio": "samples/audio/s3_t1.wav",
+          "transcript": "I would like to book an appointment."
+        },
+        {
+          "session": "Karan",
+          "role": "agent",
+          "text": "Sure. Which service: dental checkup, haircut or physiotherapy?",
+          "audio": "demo_output/audio/s3_t1_reply.wav",
+          "step": "collecting",
+          "state": {
+            "step": "collecting",
+            "intent": "book",
+            "awaiting": "service",
+            "service": null,
+            "customer_name": null,
+            "date": null,
+            "time": null,
+            "pending_slot_id": null,
+            "alternatives": [],
+            "cancel_booking_id": null,
+            "last_booking_id": null,
+            "last_cancelled_id": null,
+            "turn": 1
+          }
+        },
+        {
+          "session": "Karan",
+          "role": "user",
+          "spoken_text": "Physiotherapy, please.",
+          "audio": "samples/audio/s3_t2.wav",
+          "transcript": "Physiotherapy fleet."
+        },
+        {
+          "session": "Karan",
+          "role": "agent",
+          "text": "Sure, a physiotherapy appointment. What's your name?",
+          "audio": "demo_output/audio/s3_t2_reply.wav",
+          "step": "collecting",
+          "state": {
+            "step": "collecting",
+            "intent": "book",
+            "awaiting": "customer_name",
+            "service": "physiotherapy",
+            "customer_name": null,
+            "date": null,
+            "time": null,
+            "pending_slot_id": null,
+            "alternatives": [],
+            "cancel_booking_id": null,
+            "last_booking_id": null,
+            "last_cancelled_id": null,
+            "turn": 2
+          }
+        },
+        {
+          "session": "Karan",
+          "role": "user",
+          "spoken_text": "My name is Karan Mehta.",
+          "audio": "samples/audio/s3_t3.wav",
+          "transcript": "My name is Karan Mehta."
+        },
+        {
+          "session": "Karan",
+          "role": "agent",
+          "text": "Thanks, Karan. Which day? I have openings on Tuesday 20 October or Wednesday 21 October.",
+          "audio": "demo_output/audio/s3_t3_reply.wav",
+          "step": "collecting",
+          "state": {
+            "step": "collecting",
+            "intent": "book",
+            "awaiting": "date",
+            "service": "physiotherapy",
+            "customer_name": "Karan Mehta",
+            "date": null,
+            "time": null,
+            "pending_slot_id": null,
+            "alternatives": [],
+            "cancel_booking_id": null,
+            "last_booking_id": null,
+            "last_cancelled_id": null,
+            "turn": 3
+          }
+        },
+        {
+          "session": "Karan",
+          "role": "user",
+          "spoken_text": "October 20th.",
+          "audio": "samples/audio/s3_t4.wav",
+          "transcript": "October 20th."
+        },
+        {
+          "session": "Karan",
+          "role": "agent",
+          "text": "What time on Tuesday 20 October? I have 10 AM, 11 AM or 2 PM.",
+          "audio": "demo_output/audio/s3_t4_reply.wav",
+          "step": "collecting",
+          "state": {
+            "step": "collecting",
+            "intent": "book",
+            "awaiting": "time",
+            "service": "physiotherapy",
+            "customer_name": "Karan Mehta",
+            "date": "2026-10-20",
+            "time": null,
+            "pending_slot_id": null,
+            "alternatives": [],
+            "cancel_booking_id": null,
+            "last_booking_id": null,
+            "last_cancelled_id": null,
+            "turn": 4
+          }
+        },
+        {
+          "session": "Karan",
+          "role": "user",
+          "spoken_text": "2 PM.",
+          "audio": "samples/audio/s3_t5.wav",
+          "transcript": "2 p.m."
+        },
+        {
+          "session": "Karan",
+          "role": "agent",
+          "text": "Physiotherapy with Dr. Sana Qureshi at Kinetic Physio Centre, Tuesday 20 October at 2 PM. Shall I book it for Karan?",
+          "audio": "demo_output/audio/s3_t5_reply.wav",
+          "step": "awaiting_booking_confirmation",
+          "state": {
+            "step": "awaiting_booking_confirmation",
+            "intent": "book",
+            "awaiting": "confirmation",
+            "service": "physiotherapy",
+            "customer_name": "Karan Mehta",
+            "date": "2026-10-20",
+            "time": "14:00",
+            "pending_slot_id": "S13",
+            "alternatives": [],
+            "cancel_booking_id": null,
+            "last_booking_id": null,
+            "last_cancelled_id": null,
+            "turn": 5
+          }
+        },
+        {
+          "session": "Karan",
+          "role": "user",
+          "spoken_text": "Hmm, let me think.",
+          "audio": "samples/audio/s3_t6.wav",
+          "transcript": "On Let Me Think."
+        },
+        {
+          "session": "Karan",
+          "role": "agent",
+          "text": "Sorry, is that a yes or a no? Shall I book Tuesday 20 October at 2 PM?",
+          "audio": "demo_output/audio/s3_t6_reply.wav",
+          "step": "awaiting_booking_confirmation",
+          "state": {
+            "step": "awaiting_booking_confirmation",
+            "intent": "book",
+            "awaiting": "confirmation",
+            "service": "physiotherapy",
+            "customer_name": "Karan Mehta",
+            "date": "2026-10-20",
+            "time": "14:00",
+            "pending_slot_id": "S13",
+            "alternatives": [],
+            "cancel_booking_id": null,
+            "last_booking_id": null,
+            "last_cancelled_id": null,
+            "turn": 6
+          }
+        },
+        {
+          "session": "Karan",
+          "role": "user",
+          "spoken_text": "Yes.",
+          "audio": "samples/audio/s3_t7.wav",
+          "transcript": "Yes."
+        },
+        {
+          "session": "Karan",
+          "role": "agent",
+          "text": "You're confirmed! Your booking ID is BK16005. Physiotherapy with Dr. Sana Qureshi at Kinetic Physio Centre, Tuesday 20 October at 2 PM IST. Anything else?",
+          "audio": "demo_output/audio/s3_t7_reply.wav",
+          "step": "start",
+          "state": {
+            "step": "start",
+            "intent": null,
+            "awaiting": "intent",
+            "service": null,
+            "customer_name": "Karan Mehta",
+            "date": null,
+            "time": null,
+            "pending_slot_id": null,
+            "alternatives": [],
+            "cancel_booking_id": null,
+            "last_booking_id": "BK16005",
+            "last_cancelled_id": null,
+            "turn": 7
+          }
+        }
+      ]
+    },
+    {
+      "id": "4_cancellation",
+      "title": "Cancellation with booking ID and confirmation",
+      "sessions": {
+        "Rahul": "9de44ad2cd3c42959e09a8cf1639b5f2"
+      },
+      "log": [
+        {
+          "session": "Rahul",
+          "role": "agent",
+          "text": "Hi! I can book or cancel a dental checkup, haircut or physiotherapy appointment. How can I help?",
+          "audio": null,
+          "step": "start"
+        },
+        {
+          "session": "Rahul",
+          "role": "user",
+          "spoken_text": "I want to cancel my booking.",
+          "audio": "samples/audio/s4_t1.wav",
+          "transcript": "I want to cancel my booking."
+        },
+        {
+          "session": "Rahul",
+          "role": "agent",
+          "text": "Sure. What's your booking ID? It starts with B K.",
+          "audio": "demo_output/audio/s4_t1_reply.wav",
+          "step": "collecting",
+          "state": {
+            "step": "collecting",
+            "intent": "cancel",
+            "awaiting": "booking_id",
+            "service": null,
+            "customer_name": null,
+            "date": null,
+            "time": null,
+            "pending_slot_id": null,
+            "alternatives": [],
+            "cancel_booking_id": null,
+            "last_booking_id": null,
+            "last_cancelled_id": null,
+            "turn": 1
+          }
+        },
+        {
+          "session": "Rahul",
+          "role": "user",
+          "spoken_text": "My booking ID is B K 2 4 0 1 7.",
+          "audio": "samples/audio/s4_t2.wav",
+          "transcript": "My booking ID is BK24017."
+        },
+        {
+          "session": "Rahul",
+          "role": "agent",
+          "text": "I found BK24017: haircut for Rahul Verma, Tuesday 20 October at 11 AM. Shall I cancel it?",
+          "audio": "demo_output/audio/s4_t2_reply.wav",
+          "step": "awaiting_cancel_confirmation",
+          "state": {
+            "step": "awaiting_cancel_confirmation",
+            "intent": "cancel",
+            "awaiting": "confirmation",
+            "service": null,
+            "customer_name": null,
+            "date": null,
+            "time": null,
+            "pending_slot_id": null,
+            "alternatives": [],
+            "cancel_booking_id": "BK24017",
+            "last_booking_id": null,
+            "last_cancelled_id": null,
+            "turn": 2
+          }
+        },
+        {
+          "session": "Rahul",
+          "role": "user",
+          "spoken_text": "Yes, cancel it.",
+          "audio": "samples/audio/s4_t3.wav",
+          "transcript": "Yes, cancel it."
+        },
+        {
+          "session": "Rahul",
+          "role": "agent",
+          "text": "Done. Booking BK24017 has been cancelled, and Tuesday 20 October at 11 AM is free again. Anything else?",
+          "audio": "demo_output/audio/s4_t3_reply.wav",
+          "step": "start",
+          "state": {
+            "step": "start",
+            "intent": null,
+            "awaiting": "intent",
+            "service": null,
+            "customer_name": null,
+            "date": null,
+            "time": null,
+            "pending_slot_id": null,
+            "alternatives": [],
+            "cancel_booking_id": null,
+            "last_booking_id": null,
+            "last_cancelled_id": "BK24017",
+            "turn": 3
+          }
+        }
+      ]
+    },
+    {
+      "id": "5_double_booking",
+      "title": "Two customers try to reserve the same slot",
+      "sessions": {
+        "Sneha": "7044a4c761e449589979c8ba6ad00f00",
+        "Vikram": "50a0ca9495cd49889c8833ff2faec30e"
+      },
+      "log": [
+        {
+          "session": "Sneha",
+          "role": "agent",
+          "text": "Hi! I can book or cancel a dental checkup, haircut or physiotherapy appointment. How can I help?",
+          "audio": null,
+          "step": "start"
+        },
+        {
+          "session": "Vikram",
+          "role": "agent",
+          "text": "Hi! I can book or cancel a dental checkup, haircut or physiotherapy appointment. How can I help?",
+          "audio": null,
+          "step": "start"
+        },
+        {
+          "session": "Sneha",
+          "role": "user",
+          "spoken_text": "I want to book physiotherapy on October 21st at 10 AM. My name is Sneha Kapoor.",
+          "audio": "samples/audio/s5a_t1.wav",
+          "transcript": "I want to book Physiotherapy on the 21st of October at 10 AM. My name is Sneha Kapoor."
+        },
+        {
+          "session": "Sneha",
+          "role": "agent",
+          "text": "Physiotherapy with Dr. Sana Qureshi at Kinetic Physio Centre, Wednesday 21 October at 10 AM. Shall I book it for Sneha?",
+          "audio": "demo_output/audio/s5a_t1_reply.wav",
+          "step": "awaiting_booking_confirmation",
+          "state": {
+            "step": "awaiting_booking_confirmation",
+            "intent": "book",
+            "awaiting": "confirmation",
+            "service": "physiotherapy",
+            "customer_name": "Sneha Kapoor",
+            "date": "2026-10-21",
+            "time": "10:00",
+            "pending_slot_id": "S14",
+            "alternatives": [],
+            "cancel_booking_id": null,
+            "last_booking_id": null,
+            "last_cancelled_id": null,
+            "turn": 1
+          }
+        },
+        {
+          "session": "Vikram",
+          "role": "user",
+          "spoken_text": "Book physiotherapy for me on October 21st at 10 AM. My name is Vikram Singh.",
+          "audio": "samples/audio/s5b_t1.wav",
+          "transcript": "Book Physiotherapy for me on October 21st at 10 AM. My name is Vikram Singh."
+        },
+        {
+          "session": "Vikram",
+          "role": "agent",
+          "text": "Physiotherapy with Dr. Sana Qureshi at Kinetic Physio Centre, Wednesday 21 October at 10 AM. Shall I book it for Vikram?",
+          "audio": "demo_output/audio/s5b_t1_reply.wav",
+          "step": "awaiting_booking_confirmation",
+          "state": {
+            "step": "awaiting_booking_confirmation",
+            "intent": "book",
+            "awaiting": "confirmation",
+            "service": "physiotherapy",
+            "customer_name": "Vikram Singh",
+            "date": "2026-10-21",
+            "time": "10:00",
+            "pending_slot_id": "S14",
+            "alternatives": [],
+            "cancel_booking_id": null,
+            "last_booking_id": null,
+            "last_cancelled_id": null,
+            "turn": 1
+          }
+        },
+        {
+          "session": "Sneha",
+          "role": "user",
+          "spoken_text": "Yes, please book it.",
+          "audio": "samples/audio/s5a_t2.wav",
+          "transcript": "Yes, please book it."
+        },
+        {
+          "session": "Sneha",
+          "role": "agent",
+          "text": "You're confirmed! Your booking ID is BK43146. Physiotherapy with Dr. Sana Qureshi at Kinetic Physio Centre, Wednesday 21 October at 10 AM IST. Anything else?",
+          "audio": "demo_output/audio/s5a_t2_reply.wav",
+          "step": "start",
+          "state": {
+            "step": "start",
+            "intent": null,
+            "awaiting": "intent",
+            "service": null,
+            "customer_name": "Sneha Kapoor",
+            "date": null,
+            "time": null,
+            "pending_slot_id": null,
+            "alternatives": [],
+            "cancel_booking_id": null,
+            "last_booking_id": "BK43146",
+            "last_cancelled_id": null,
+            "turn": 2
+          }
+        },
+        {
+          "session": "Vikram",
+          "role": "user",
+          "spoken_text": "Yes, confirm.",
+          "audio": "samples/audio/s5b_t2.wav",
+          "transcript": "Yes, confirmed."
+        },
+        {
+          "session": "Vikram",
+          "role": "agent",
+          "text": "Sorry, that slot was just booked by another customer, so I could not reserve it. I have 10 AM or 11 AM on Tuesday 20 October, or 3 PM on Wednesday 21 October. Which works for you?",
+          "audio": "demo_output/audio/s5b_t2_reply.wav",
+          "step": "offering_alternatives",
+          "state": {
+            "step": "offering_alternatives",
+            "intent": "book",
+            "awaiting": "alternative_choice",
+            "service": "physiotherapy",
+            "customer_name": "Vikram Singh",
+            "date": "2026-10-21",
+            "time": "10:00",
+            "pending_slot_id": null,
+            "alternatives": [
+              "S11",
+              "S12",
+              "S15"
+            ],
+            "cancel_booking_id": null,
+            "last_booking_id": null,
+            "last_cancelled_id": null,
+            "turn": 2
+          }
+        },
+        {
+          "session": "Vikram",
+          "role": "user",
+          "spoken_text": "The first one.",
+          "audio": "samples/audio/s5b_t3.wav",
+          "transcript": "The first one."
+        },
+        {
+          "session": "Vikram",
+          "role": "agent",
+          "text": "Physiotherapy with Dr. Sana Qureshi at Kinetic Physio Centre, Tuesday 20 October at 10 AM. Shall I book it for Vikram?",
+          "audio": "demo_output/audio/s5b_t3_reply.wav",
+          "step": "awaiting_booking_confirmation",
+          "state": {
+            "step": "awaiting_booking_confirmation",
+            "intent": "book",
+            "awaiting": "confirmation",
+            "service": "physiotherapy",
+            "customer_name": "Vikram Singh",
+            "date": "2026-10-20",
+            "time": "10:00",
+            "pending_slot_id": "S11",
+            "alternatives": [],
+            "cancel_booking_id": null,
+            "last_booking_id": null,
+            "last_cancelled_id": null,
+            "turn": 3
+          }
+        },
+        {
+          "session": "Vikram",
+          "role": "user",
+          "spoken_text": "Yes.",
+          "audio": "samples/audio/s5b_t4.wav",
+          "transcript": "Yes."
+        },
+        {
+          "session": "Vikram",
+          "role": "agent",
+          "text": "You're confirmed! Your booking ID is BK48757. Physiotherapy with Dr. Sana Qureshi at Kinetic Physio Centre, Tuesday 20 October at 10 AM IST. Anything else?",
+          "audio": "demo_output/audio/s5b_t4_reply.wav",
+          "step": "start",
+          "state": {
+            "step": "start",
+            "intent": null,
+            "awaiting": "intent",
+            "service": null,
+            "customer_name": "Vikram Singh",
+            "date": null,
+            "time": null,
+            "pending_slot_id": null,
+            "alternatives": [],
+            "cancel_booking_id": null,
+            "last_booking_id": "BK48757",
+            "last_cancelled_id": null,
+            "turn": 4
+          }
+        }
+      ]
+    },
+    {
+      "id": "6_declined_confirmation",
+      "title": "Customer declines at the confirmation step, nothing is booked",
+      "sessions": {
+        "Meera": "1b07b8597aba4e95807331fd2ed809a7"
+      },
+      "log": [
+        {
+          "session": "Meera",
+          "role": "agent",
+          "text": "Hi! I can book or cancel a dental checkup, haircut or physiotherapy appointment. How can I help?",
+          "audio": null,
+          "step": "start"
+        },
+        {
+          "session": "Meera",
+          "role": "user",
+          "spoken_text": "Can I get a haircut on October 21st at 3 PM? This is Meera Joshi.",
+          "audio": "samples/audio/s6_t1.wav",
+          "transcript": "Can I get a haircut on October 21st at 3 PM? This is Mira Joshi."
+        },
+        {
+          "session": "Meera",
+          "role": "agent",
+          "text": "Haircut with Arjun Nair at Urban Trim Salon, Wednesday 21 October at 3 PM. Shall I book it for Mira?",
+          "audio": "demo_output/audio/s6_t1_reply.wav",
+          "step": "awaiting_booking_confirmation",
+          "state": {
+            "step": "awaiting_booking_confirmation",
+            "intent": "book",
+            "awaiting": "confirmation",
+            "service": "haircut",
+            "customer_name": "Mira Joshi",
+            "date": "2026-10-21",
+            "time": "15:00",
+            "pending_slot_id": "S10",
+            "alternatives": [],
+            "cancel_booking_id": null,
+            "last_booking_id": null,
+            "last_cancelled_id": null,
+            "turn": 1
+          }
+        },
+        {
+          "session": "Meera",
+          "role": "user",
+          "spoken_text": "No, don't book it.",
+          "audio": "samples/audio/s6_t2.wav",
+          "transcript": "No, don't book it."
+        },
+        {
+          "session": "Meera",
+          "role": "agent",
+          "text": "No problem, I have not booked anything. Which other day would you like?",
+          "audio": "demo_output/audio/s6_t2_reply.wav",
+          "step": "collecting",
+          "state": {
+            "step": "collecting",
+            "intent": "book",
+            "awaiting": "date",
+            "service": "haircut",
+            "customer_name": "Mira Joshi",
+            "date": null,
+            "time": null,
+            "pending_slot_id": null,
+            "alternatives": [],
+            "cancel_booking_id": null,
+            "last_booking_id": null,
+            "last_cancelled_id": null,
+            "turn": 2
+          }
+        }
+      ]
+    }
+  ],
+  "race": {
+    "slot": "S09 (haircut, 21 Oct 2026 10:00 IST)",
+    "attempts": 20,
+    "successes": 1,
+    "winner": [
+      "BK21306"
+    ],
+    "confirmed_bookings_for_slot": 1,
+    "rejections_audited": 19
+  },
+  "checks": [
+    [
+      "1 Successful booking: haircut 20 Oct 10:00 (S06) booked for Priya",
+      true
+    ],
+    [
+      "2 Unavailable slot: dental 20 Oct 10:00 (S01) still holds only Anita's booking",
+      true
+    ],
+    [
+      "2 Unavailable slot: offered alternative 20 Oct 11:00 (S02) booked for Rohan",
+      true
+    ],
+    [
+      "3 Missing info: physiotherapy 20 Oct 14:00 (S13) booked for Karan",
+      true
+    ],
+    [
+      "4 Cancellation: BK24017 cancelled and slot S07 available again",
+      true
+    ],
+    [
+      "5 Same slot twice: Sneha got physiotherapy 21 Oct 10:00 (S14)",
+      true
+    ],
+    [
+      "5 Same slot twice: Vikram's confirmation was rejected and audited",
+      true
+    ],
+    [
+      "5 Same slot twice: Vikram then booked a different offered slot",
+      true
+    ],
+    [
+      "6 Declined confirmation: agent asked to confirm S10, customer said no, slot still available",
+      true
+    ],
+    [
+      "Every BOOKED/CANCELLED change followed a yes/no prompt for that exact slot or booking",
+      true
+    ],
+    [
+      "No slot has more than one confirmed booking",
+      true
+    ],
+    [
+      "Booked slots match confirmed bookings exactly",
+      true
+    ],
+    [
+      "Race: 20 concurrent reservations of one slot -> 1 success, 19 audited rejections",
+      true
+    ]
+  ]
+}

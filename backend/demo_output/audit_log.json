@@ -1,0 +1,177 @@
+[
+  {
+    "id": 1,
+    "occurred_at": "2026-10-09T18:30:00+05:30",
+    "action": "SEEDED",
+    "booking_id": "BK24017",
+    "slot_id": "S07",
+    "session_id": null,
+    "actor": "system",
+    "details": {
+      "before": {
+        "slot_status": "available"
+      },
+      "after": {
+        "slot_status": "booked",
+        "booking_status": "confirmed",
+        "customer_name": "Rahul Verma"
+      }
+    }
+  },
+  {
+    "id": 2,
+    "occurred_at": "2026-10-10T11:15:00+05:30",
+    "action": "SEEDED",
+    "booking_id": "BK31552",
+    "slot_id": "S01",
+    "session_id": null,
+    "actor": "system",
+    "details": {
+      "before": {
+        "slot_status": "available"
+      },
+      "after": {
+        "slot_status": "booked",
+        "booking_status": "confirmed",
+        "customer_name": "Anita Desai"
+      }
+    }
+  },
+  {
+    "id": 3,
+    "occurred_at": "2026-10-11T09:00:00+05:30",
+    "action": "BOOKED",
+    "booking_id": "BK96180",
+    "slot_id": "S06",
+    "session_id": "bdf88f502e934ad4b928bd86ede5c7dd",
+    "actor": "Priya Sarma",
+    "details": {
+      "before": {
+        "slot_status": "available"
+      },
+      "after": {
+        "slot_status": "booked",
+        "booking_status": "confirmed",
+        "customer_name": "Priya Sarma",
+        "start_at": "2026-10-20T10:00:00+05:30",
+        "service": "haircut"
+      }
+    }
+  },
+  {
+    "id": 4,
+    "occurred_at": "2026-10-11T09:00:00+05:30",
+    "action": "BOOKED",
+    "booking_id": "BK65978",
+    "slot_id": "S02",
+    "session_id": "23f4a955236d4d3c84f164c38640583e",
+    "actor": "Rohan Gupta",
+    "details": {
+      "before": {
+        "slot_status": "available"
+      },
+      "after": {
+        "slot_status": "booked",
+        "booking_status": "confirmed",
+        "customer_name": "Rohan Gupta",
+        "start_at": "2026-10-20T11:00:00+05:30",
+        "service": "dental checkup"
+      }
+    }
+  },
+  {
+    "id": 5,
+    "occurred_at": "2026-10-11T09:00:00+05:30",
+    "action": "BOOKED",
+    "booking_id": "BK16005",
+    "slot_id": "S13",
+    "session_id": "4d2548b181e84a91b6049e63829e7086",
+    "actor": "Karan Mehta",
+    "details": {
+      "before": {
+        "slot_status": "available"
+      },
+      "after": {
+        "slot_status": "booked",
+        "booking_status": "confirmed",
+        "customer_name": "Karan Mehta",
+        "start_at": "2026-10-20T14:00:00+05:30",
+        "service": "physiotherapy"
+      }
+    }
+  },
+  {
+    "id": 6,
+    "occurred_at": "2026-10-11T09:00:00+05:30",
+    "action": "CANCELLED",
+    "booking_id": "BK24017",
+    "slot_id": "S07",
+    "session_id": "9de44ad2cd3c42959e09a8cf1639b5f2",
+    "actor": "Rahul Verma",
+    "details": {
+      "before": {
+        "booking_status": "confirmed",
+        "slot_status": "booked"
+      },
+      "after": {
+        "booking_status": "cancelled",
+        "slot_status": "available"
+      }
+    }
+  },
+  {
+    "id": 7,
+    "occurred_at": "2026-10-11T09:00:00+05:30",
+    "action": "BOOKED",
+    "booking_id": "BK43146",
+    "slot_id": "S14",
+    "session_id": "7044a4c761e449589979c8ba6ad00f00",
+    "actor": "Sneha Kapoor",
+    "details": {
+      "before": {
+        "slot_status": "available"
+      },
+      "after": {
+        "slot_status": "booked",
+        "booking_status": "confirmed",
+        "customer_name": "Sneha Kapoor",
+        "start_at": "2026-10-21T10:00:00+05:30",
+        "service": "physiotherapy"
+      }
+    }
+  },
+  {
+    "id": 8,
+    "occurred_at": "2026-10-11T09:00:00+05:30",
+    "action": "BOOK_REJECTED_SLOT_TAKEN",
+    "booking_id": null,
+    "slot_id": "S14",
+    "session_id": "50a0ca9495cd49889c8833ff2faec30e",
+    "actor": "Vikram Singh",
+    "details": {
+      "reason": "slot already booked",
+      "requested_by": "Vikram Singh"
+    }
+  },
+  {
+    "id": 9,
+    "occurred_at": "2026-10-11T09:00:00+05:30",
+    "action": "BOOKED",
+    "booking_id": "BK48757",
+    "slot_id": "S11",
+    "session_id": "50a0ca9495cd49889c8833ff2faec30e",
+    "actor": "Vikram Singh",
+    "details": {
+      "before": {
+        "slot_status": "available"
+      },
+      "after": {
+        "slot_status": "booked",
+        "booking_status": "confirmed",
+        "customer_name": "Vikram Singh",
+        "start_at": "2026-10-20T10:00:00+05:30",
+        "service": "physiotherapy"
+      }
+    }
+  }
+]
