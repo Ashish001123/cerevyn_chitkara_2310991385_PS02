@@ -1,0 +1,37 @@
+{
+  "clean": {
+    "field_accuracy": 1.0,
+    "failures": []
+  },
+  "babble_20dB": {
+    "field_accuracy": 1.0,
+    "failures": []
+  },
+  "babble_10dB": {
+    "field_accuracy": 1.0,
+    "failures": []
+  },
+  "babble_5dB": {
+    "field_accuracy": 0.944,
+    "failures": [
+      "s3_t5.time: want '14:00' got None  <- ''"
+    ]
+  },
+  "fan_10dB": {
+    "field_accuracy": 1.0,
+    "failures": []
+  },
+  "fan_5dB": {
+    "field_accuracy": 1.0,
+    "failures": []
+  },
+  "background_only": {
+    "false_triggers": 0,
+    "clips": 10,
+    "texts": []
+  },
+  "stt_latency_s": {
+    "median": 0.723,
+    "p90": 0.879
+  }
+}

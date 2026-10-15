@@ -1,0 +1,41 @@
+{
+  "clean": {
+    "field_accuracy": 1.0,
+    "failures": []
+  },
+  "babble_20dB": {
+    "field_accuracy": 1.0,
+    "failures": []
+  },
+  "babble_10dB": {
+    "field_accuracy": 1.0,
+    "failures": []
+  },
+  "babble_5dB": {
+    "field_accuracy": 1.0,
+    "failures": []
+  },
+  "fan_10dB": {
+    "field_accuracy": 1.0,
+    "failures": []
+  },
+  "fan_5dB": {
+    "field_accuracy": 1.0,
+    "failures": []
+  },
+  "background_only": {
+    "false_triggers": 5,
+    "clips": 10,
+    "texts": [
+      "Yes, we can see it. Yes, we can see it. Yes.",
+      "Book an appointment, I would like to book an appointment, I would like to book an appointment.",
+      "For me on October 11th at 10 AM.",
+      "I want to cancel my booking, I want to cancel my booking. I want to cancel my-",
+      "Booking appointment."
+    ]
+  },
+  "stt_latency_s": {
+    "median": 0.703,
+    "p90": 0.851
+  }
+}
