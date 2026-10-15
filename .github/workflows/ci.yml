@@ -1,0 +1,50 @@
+name: CI
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      APP_NOW: "2026-10-11T09:00:00+05:30"
+      SPEECH_PROVIDER: local
+      WHISPER_MODEL: base.en
+      DB_PATH: data/appointments.db
+      AUDIO_OUT_DIR: data/tts_out
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/requirements.txt
+
+      - name: Install system audio deps (pyttsx3 on Linux)
+        run: sudo apt-get install -y espeak libespeak1 ffmpeg
+
+      - name: Install Python dependencies
+        run: pip install -r backend/requirements.txt
+
+      - name: Initialise database
+        working-directory: backend
+        run: python scripts/init_db.py --reset
+
+      - name: Run tests
+        working-directory: backend
+        run: pytest -q --tb=short
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pytest-results
+          path: backend/.coverage
+          if-no-files-found: ignore
