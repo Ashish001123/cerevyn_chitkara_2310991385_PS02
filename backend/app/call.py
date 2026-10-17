@@ -24,9 +24,9 @@ from .speech import STTEngine, TTSEngine
 from .turns import FRAME_MS, TurnConfig, TurnDetector
 
 SR = 16000
-FRAME = SR * FRAME_MS // 1000          # 512 samples
-PREROLL_FRAMES = 10                    # ~320 ms kept from before the turn started (word onsets)
-MIN_TURN_SAMPLES = SR                  # shorter "turns" with no words (coughs, clicks) are ignored
+FRAME = SR * FRAME_MS // 1000          
+PREROLL_FRAMES = 10                    
+MIN_TURN_SAMPLES = SR                  
 REPEAT_PROMPT = "Sorry, could you say that again?"
 
 
