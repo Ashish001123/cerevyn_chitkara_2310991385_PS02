@@ -22,16 +22,16 @@ GREETING = "Hi! I can book or cancel a dental checkup, haircut or physiotherapy 
 
 def initial_state() -> dict:
     return {
-        "step": "start",            # start | collecting | offering_alternatives |
-                                    # awaiting_booking_confirmation | awaiting_cancel_confirmation
-        "intent": None,             # book | cancel
-        "awaiting": "intent",       # which piece of information the agent last asked for
+        "step": "start",           
+                                    
+        "intent": None,             
+        "awaiting": "intent",       
         "service": None,
         "customer_name": None,
-        "date": None,               # YYYY-MM-DD, Asia/Kolkata
-        "time": None,               # HH:MM, Asia/Kolkata
-        "pending_slot_id": None,    # slot read back to the user and awaiting yes/no
-        "alternatives": [],         # slot ids offered from the database
+        "date": None,               
+        "time": None,               
+        "pending_slot_id": None,    
+        "alternatives": [],         
         "cancel_booking_id": None,
         "last_booking_id": None,
         "last_cancelled_id": None,
